@@ -1,13 +1,13 @@
+import { LeftSection } from "@/components/login/left-section";
+import { RightSection } from "@/components/registro/right-section";
 
 
 
 export default function LayoutRegisto(){
     return(
-        <div>
-            <h1>Registo</h1>
-            <p> 'BUDA'</p>
-            <input type="text" />
-            <button>Enviar</button>
+        <div className="bg-gray-200 h-screen flex"> 
+            <LeftSection/>
+            <RightSection/>
         </div>
     )
 }
