@@ -6,6 +6,7 @@ import { Input } from "../ui/input"
 import { Label } from "../ui/label"
 import { useState } from "react"
 import { toast } from "sonner"
+import { setCookie } from "nookies"
 
 export const RightSection = () => {
 
@@ -57,6 +58,16 @@ export const RightSection = () => {
 
             console.log("data", responsedata)
 
+            //salvar cookie
+            setCookie(null, "token", responsedata.data.token, {
+                maxAge: 60 * 60 * 24 * 7,
+                path: "/",
+            })
+            setCookie(null, "user", JSON.stringify(responsedata.data), {
+                maxAge: 60 * 60 * 24 * 7,
+                path: "/",
+            })
+
             if (typeof window !== "undefined") {
                 window.location.href = "/home"
             }
@@ -101,7 +112,7 @@ export const RightSection = () => {
                             className="bg-[#13a4ec] w-full font-bold  py-3 drop-shadow-lg drop-shadow-gray-200">Login</Button>
 
                     </div>
-                    <div>
+                    <div className="text-center py-3">
                         <span>Don't have an account? </span>
                         <Link href="/registo" className="text-[#13a4ec]">Create an account</Link>
                     </div>

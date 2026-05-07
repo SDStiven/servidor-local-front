@@ -1,5 +1,5 @@
 import { LeftSection } from "@/components/login/left-section";
-import { RightSection } from "@/components/registro/right-section";
+import { RightSection } from "@/components/registro/right-registo";
 
 
 

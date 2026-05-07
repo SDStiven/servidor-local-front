@@ -219,7 +219,9 @@ export const RightSection = () => {
                             onClick={handleRegister}
                             className="bg-[#13a4ec] w-full font-bold  py-3 drop-shadow-lg drop-shadow-gray-200"
                         >Enviar</Button>
-                        <div>
+                        <div className="text-center 
+                        
+                         ">
                             <span>Already have an account? </span>
                             <Link href="/login" className="text-[#13a4ec]">Login</Link>
 
