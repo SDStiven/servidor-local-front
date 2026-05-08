@@ -4,11 +4,15 @@ import { PedidoCard } from "@/components/core/pedido-carde";
 import { Bell, LayoutDashboard, Briefcase, Users, Settings, Search } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import Image from "next/image";
-import pedidocard from "@/utils/types";
+import pedidocard from "@/utils/db";
+import Navbar from "@/components/grupo/navebar";
 
 const HomePage = () => {
     return (
         <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950 font-sans">
+            <div className="m-10  ">
+                <Navbar />
+            </div>
             {/* Top Navigation - Fica no topo de tudo */}
             <header className="h-16 sticky top-0 z-50 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-6 flex items-center justify-between shadow-sm">
                 {/* Lado Esquerdo: Logo */}
@@ -49,9 +53,6 @@ const HomePage = () => {
             <div className="flex flex-1 overflow-hidden">
                 {/* Sidebar - Começa abaixo do header e não sobrepõe */}
                 <aside className="w-64  border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hidden lg:flex flex-col">
-                    <div className="p-4">
-                        <p >Ismar Asar</p>
-                    </div>
 
                     <Card className="flex p-4 space-y-1 m-2">
                         <button className="flex items-center w-full p-3 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-xl font-medium">
@@ -116,10 +117,7 @@ const HomePage = () => {
                             ))}
                         </div>
 
-                    <div className="flex flex-col gap-5">
-                        <p className="bg-red-500 text-5xl">Ismar Asar da merda</p>
 
-                    </div>
                     </div>
                 </main>
             </div>
