@@ -28,7 +28,7 @@ const NaveBar = () => {
                         <a href="#" className="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Ajuda</a>
                     </nav>
                 </DrawerContent>
-                
+
             </Drawer>
 
             {/* Centro: Pesquisa e Links */}

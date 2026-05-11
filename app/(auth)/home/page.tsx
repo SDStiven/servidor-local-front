@@ -6,8 +6,27 @@ import { Card } from "@/components/ui/card";
 import Image from "next/image";
 import pedidocard from "@/utils/db";
 import Navbar from "@/components/grupo/navebar";
+import { parseCookies } from "nookies";
 
 const HomePage = () => {
+    const { user, token } = parseCookies()
+    // console.log("user", user)
+
+    const userdata = JSON.parse(user)
+
+    console.log("userdata", userdata)
+    // console.log("token", token)
+    console.log("user id", userdata.id)
+    // console.log("user name", userdata.user.name)
+
+    const orcamentopaloud = {
+        id_utilizador: userdata.id
+    }
+    // console.log("orcamentopaloud", orcamentopaloud)
+
+
+
+
     return (
         <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950 font-sans">
             <div className="m-10  ">
