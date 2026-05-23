@@ -116,6 +116,11 @@ export const RightSection = () => {
                         <span>Don't have an account? </span>
                         <Link href="/registo" className="text-[#13a4ec]">Create an account</Link>
                     </div>
+                    <div className="text-center py-3">
+                        <span>Convidado? </span>
+                        <Link href="/home" className="text-[#13a4ec]">Continuar ...</Link>
+                    </div>
+
 
                 </CardContent>
 

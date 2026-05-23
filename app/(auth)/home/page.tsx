@@ -12,7 +12,7 @@ const HomePage = () => {
 
     return (
         <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950 font-sans">
-            <div className="m-10  ">
+            <div className="s">
                 <Navbar />
             </div>
             <div className="flex flex-1 overflow-hidden">
