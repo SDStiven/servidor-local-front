@@ -1,20 +1,14 @@
-# Especifica versão de sistema operacional base
-FROM node:22-alpine
+FROM node:20-alpine
 
-# Difine a pasta onde o codigo vai ser executado
-WORKDIR  /app
+WORKDIR /app
 
-# Copia os arquivos package.json e package-lock.json
-COPY package*.json ./
+RUN corepack enable
+dfsf
+COPY package.json ./
+RUN pnpm install
 
-# Instala as dependências
-RUN npm install
-
-# Copia o restante do código para o container
 COPY . .
 
-# Informar a porta que o container vai usar
 EXPOSE 3000
 
-# Comando para iniciar o servidor
-CMD ["npm", "run", "dev"]
+CMD ["pnpm", "run", "dev"]

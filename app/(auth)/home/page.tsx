@@ -1,93 +1,314 @@
 "use client";
 
-import { PedidoCard } from "@/components/core/pedido-carde";
-import { Bell, LayoutDashboard, Briefcase, Users, Settings, Search } from "lucide-react";
-import { Card } from "@/components/ui/card";
-import Image from "next/image";
-import pedidocard from "@/utils/db";
-import Navbar from "@/components/grupo/navebar";
-import { parseCookies } from "nookies";
+import { useMemo, useState } from "react";
+import Link from "next/link";
+import {
+  BellIcon,
+  Droplets,
+  Hammer,
+  PaintRoller,
+  Snowflake,
+  Wrench,
+  Zap,
+} from "lucide-react";
 
-const HomePage = () => {
+import { SearchIcon } from "@/assets/icons/search";
+import Sidebar from "@/components/budget/sidebar";
+import Cabeçalho from "@/components/core/Cabeçalho";
+import Footer from "@/components/core/footer";
+import Navbar from "@/components/core/navbar";
+import { PedidoCard } from "@/components/core/pedido-card";
 
+type CategoryFilter =
+  | "all"
+  | "Electrical"
+  | "Plumbing"
+  | "Painting"
+  | "Carpentry"
+  | "Refrigeration";
+
+const categoryOptions: {
+  key: CategoryFilter;
+  name: string;
+  icon: React.ReactNode;
+}[] = [
+  {
+    key: "all",
+    name: "Todos os Serviços",
+    icon: <Wrench size={20} />,
+  },
+  {
+    key: "Electrical",
+    name: "Elétrico",
+    icon: <Zap size={20} />,
+  },
+  {
+    key: "Plumbing",
+    name: "Hidráulica",
+    icon: <Droplets size={20} />,
+  },
+  {
+    key: "Carpentry",
+    name: "Carpintaria",
+    icon: <Hammer size={20} />,
+  },
+  {
+    key: "Painting",
+    name: "Pintura",
+    icon: <PaintRoller size={20} />,
+  },
+  {
+    key: "Refrigeration",
+    name: "Refrigeração",
+    icon: <Snowflake size={20} />,
+  },
+];
+
+const homeRequests = [
+  {
+    id: "reparos-gerais",
+    title: "Reparos gerais",
+    description: "Preciso de um profissional para fazer reparos gerais em casa.",
+    image:
+      "https://images.unsplash.com/photo-1523419409543-7f3f8f52a2e4?q=80&w=1200&auto=format&fit=crop",
+    category: {
+      id: 1,
+      name: "Reparos gerais",
+      icone: "🔧",
+      price: "$89.00",
+    },
+  },
+  {
+    id: "pintar-parede",
+    title: "Pintar parede",
+    description: "Preciso pintar uma parede da sala.",
+    image:
+      "https://images.unsplash.com/photo-1562259949-e8e7689d7828?q=80&w=1200&auto=format&fit=crop",
+    category: {
+      id: 2,
+      name: "Pintura",
+      icone: "🎨",
+      price: "$65.00",
+    },
+  },
+  {
+    id: "trocar-chuveiro",
+    title: "Trocar chuveiro",
+    description: "Preciso trocar um chuveiro elétrico antigo.",
+    image:
+      "https://images.unsplash.com/photo-1558002038-1055907df827?q=80&w=1200&auto=format&fit=crop",
+    category: {
+      id: 3,
+      name: "Eletricista",
+      icone: "⚡",
+      price: "$75.00",
+    },
+  },
+  {
+    id: "ar-condicionado",
+    title: "Instalação de ar condicionado",
+    description: "Preciso instalar um ar-condicionado split.",
+    image:
+      "https://images.unsplash.com/photo-1581578731548-c64695cc6952?q=80&w=1200&auto=format&fit=crop",
+    category: {
+      id: 4,
+      name: "Refrigeração",
+      icone: "❄️",
+      price: "$130.00",
+    },
+  },
+  {
+    id: "reparar-vazamento",
+    title: "Reparar vazamento",
+    description: "Tenho um vazamento na pia do banheiro.",
+    image:
+      "https://images.unsplash.com/photo-1621905252507-b35492cc74b4?q=80&w=1200&auto=format&fit=crop",
+    category: {
+      id: 5,
+      name: "Hidraulica",
+      icone: "🚰",
+      price: "$95.00",
+    },
+  },
+  {
+    id: "montar-guarda-roupa",
+    title: "Montar guarda-roupa",
+    description: "Preciso montar um guarda-roupa novo.",
+    image:
+      "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=1200&auto=format&fit=crop",
+    category: {
+      id: 6,
+      name: "Montagem de Moveis",
+      icone: "🔨",
+      price: "$110.00",
+    },
+  },
+];
+
+const matchesCategory = (
+  request: (typeof homeRequests)[number],
+  category: CategoryFilter,
+) => {
+  const normalized = request.category.name.toLowerCase();
+  const title = request.title.toLowerCase();
+
+  if (category === "all") {
+    return true;
+  }
+
+  if (category === "Electrical") {
     return (
-        <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950 font-sans">
-            <div className="m-10  ">
-                <Navbar />
-            </div>
-            <div className="flex flex-1 overflow-hidden">
-                {/* Sidebar - Começa abaixo do header e não sobrepõe */}
-                <aside className="w-64  border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hidden lg:flex flex-col">
-
-                    <Card className="flex p-4 space-y-1 m-2">
-                        <button className="flex items-center w-full p-3 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-xl font-medium">
-                            <LayoutDashboard size={20} className="mr-3" />
-                            Dashboard
-                        </button>
-                        <button className="flex items-center w-full p-3 text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl font-medium transition-colors">
-                            <Briefcase size={20} className="mr-3" />
-                            Serviços
-                        </button>
-                        <button className="flex items-center w-full p-3 text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl font-medium transition-colors">
-                            <Users size={20} className="mr-3" />
-                            Clientes
-                        </button>
-                        <button className="flex items-center w-full p-3 text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl font-medium transition-colors">
-                            <Settings size={20} className="mr-3" />
-                            Configurações
-                        </button>
-                    </Card>
-                    <Card className="p-flex p-4 space-y-1 m-2">
-                        <h1 className="font-bold">Rating</h1>
-                        <div className="flex items-center gap-2">
-                            <input type="checkbox" className="m-2" /> ⭐⭐⭐⭐⭐ 4.0
-                        </div>
-                    </Card>
-                </aside>
-
-                {/* Main Content - Toma todo o espaço que resta */}
-                <main className="flex-1 overflow-y-auto bg-slate-50 dark:bg-slate-950 p-8">
-                    <div className="max-w-7xl mx-auto">
-                        {/* Welcome Banner */}
-                        <div className="mb-10">
-                            <Card className="relative overflow-hidden h-[200px] flex items-center justify-center bg-blue-600 border-none">
-                                <Image
-                                    src="https://images.unsplash.com/photo-1497215728101-856f4ea42174?q=80&w=2070"
-                                    alt="Office Banner"
-                                    fill
-                                    className="object-cover opacity-30"
-                                />
-                                <div className="relative text-center">
-                                    <p className="text-blue-100 font-medium mb-1">Bem-vindo ao seu painel</p>
-                                    <h2 className="text-4xl font-black text-white tracking-tight">Smart Find Dashboard</h2>
-                                </div>
-                            </Card>
-                        </div>
-
-                        {/* Pedidos Grid */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                            {pedidocard.map((pedido) => (
-                                <PedidoCard
-                                    key={pedido.id}
-                                    title={pedido.title}
-                                    description={pedido.description}
-                                    price={pedido.price}
-                                    image={pedido.image}
-                                    category={{
-                                        id: pedido.category.id,
-                                        name: pedido.category.name,
-                                        icon: pedido.category.icone
-                                    }}
-                                />
-                            ))}
-                        </div>
-
-
-                    </div>
-                </main>
-            </div>
-        </div>
+      normalized.includes("eletric") ||
+      normalized.includes("electric") ||
+      title.includes("eletric")
     );
+  }
+
+  if (category === "Plumbing") {
+    return (
+      normalized.includes("hidraul") ||
+      title.includes("hidraul") ||
+      title.includes("vazamento")
+    );
+  }
+
+  if (category === "Painting") {
+    return normalized.includes("pintura") || title.includes("pintar");
+  }
+
+  if (category === "Carpentry") {
+    return (
+      normalized.includes("montagem") ||
+      normalized.includes("moveis") ||
+      title.includes("montar")
+    );
+  }
+
+  if (category === "Refrigeration") {
+    return normalized.includes("refrig") || title.includes("ar condicionado");
+  }
+
+  return true;
 };
 
-export default HomePage;
+export default function HomePage() {
+  const [activeCategory, setActiveCategory] = useState<CategoryFilter>("all");
+  const [searchValue, setSearchValue] = useState("");
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+
+  const filteredRequests = useMemo(() => {
+    return homeRequests.filter((request) => {
+      if (!matchesCategory(request, activeCategory)) {
+        return false;
+      }
+
+      const query = searchValue.trim().toLowerCase();
+      if (!query) {
+        return true;
+      }
+
+      return (
+        request.title.toLowerCase().includes(query) ||
+        request.description.toLowerCase().includes(query) ||
+        request.category.name.toLowerCase().includes(query)
+      );
+    });
+  }, [activeCategory, searchValue]);
+
+  const activeCategoryName =
+    categoryOptions.find((option) => option.key === activeCategory)?.name ||
+    "Todos os serviços";
+
+  return (
+    <div className="bg-gray-100">
+      <div className="min-h-screen bg-slate-50">
+        <Navbar>
+          <div className="flex flex-1 items-center gap-3 sm:gap-4">
+            <div className="flex items-center gap-2">
+              {isSearchOpen && (
+                <input
+                  type="search"
+                  value={searchValue}
+                  onChange={(event) => setSearchValue(event.target.value)}
+                  placeholder="Pesquisar serviços..."
+                  className="h-10 w-40 sm:w-56 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-900 outline-none transition focus:border-[#13a4ec] focus:ring-2 focus:ring-[#13a4ec]/20"
+                />
+              )}
+
+              <button
+                type="button"
+                onClick={() => setIsSearchOpen((current) => !current)}
+                aria-label={isSearchOpen ? "Fechar pesquisa" : "Abrir pesquisa"}
+                className="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-slate-900 shadow-sm transition hover:bg-slate-100"
+              >
+                <SearchIcon />
+              </button>
+            </div>
+
+            <div className="hidden sm:block rounded-xl bg-white p-2 shadow-sm">
+              <BellIcon />
+            </div>
+
+            <div className="hidden sm:block text-sm text-slate-600">
+              <Link href="/register">Sign up</Link>
+            </div>
+          </div>
+        </Navbar>
+
+        <div className="flex flex-1">
+          <aside className="hidden w-72 border-r border-slate-200 bg-white p-6 xl:block">
+            <Sidebar
+              categories={categoryOptions}
+              activeCategory={activeCategory}
+              onCategorySelect={(categoryKey) =>
+                setActiveCategory(categoryKey as CategoryFilter)
+              }
+            />
+          </aside>
+
+          <main className="flex-1 p-6 md:p-10">
+            <div className="flex flex-col">
+              <Cabeçalho />
+            </div>
+
+            <div className="mx-0 mt-10 md:mx-8">
+              <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p className="text-sm text-slate-500">Filtrando por</p>
+                  <h2 className="text-2xl font-bold text-slate-900">
+                    {activeCategoryName}
+                  </h2>
+                </div>
+
+                <p className="text-sm text-slate-500">
+                  Use a busca para filtrar títulos, categorias e descrições.
+                </p>
+              </div>
+
+              {filteredRequests.length === 0 ? (
+                <div className="rounded-3xl border border-slate-200 bg-white p-10 text-center text-slate-600">
+                  Nenhum serviço encontrado. Tente outro filtro ou termo de
+                  pesquisa.
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                  {filteredRequests.map((request) => (
+                    <PedidoCard
+                      key={request.id}
+                      title={request.title}
+                      description={request.description}
+                      image={request.image}
+                      category={request.category}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+          </main>
+        </div>
+
+        <Footer />
+      </div>
+    </div>
+  );
+}

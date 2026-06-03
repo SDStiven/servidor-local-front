@@ -1,127 +1,103 @@
-"use client"
-import Link from "next/link"
-import { Button } from "../ui/button"
-import { Card, CardContent, CardHeader } from "../ui/card"
-import { Input } from "../ui/input"
-import { Label } from "../ui/label"
-import { useState } from "react"
-import { toast } from "sonner"
-import { setCookie } from "nookies"
+"use client";
+
+import Link from "next/link";
+import { useState } from "react";
+import { setCookie } from "nookies";
+import { toast } from "sonner";
+
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export const RightSection = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-    //hooks
-    // useState
-    // useEffect
+  const handleLogin = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
 
-    //useState    
-    const [email, setEmail] = useState("")
-    const [password, setPassword] = useState("")
+    const response = await fetch("http://localhost:8080/users/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email,
+        password,
+      }),
+    });
 
-    const changeEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.value) {
-            setEmail(e.target.value)
-        } else {
-            setEmail("")
-        }
-
-    }
-    const changePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.value) {
-            setPassword(e.target.value)
-        } else {
-            setPassword("")
-        }
-
+    if (response.status !== 200) {
+      toast.error("Email or password is invalid.");
+      return;
     }
 
-    const handleLogin = async (e: React.MouseEvent<HTMLButtonElement>) => {
-        e.preventDefault();
+    const responseData = await response.json();
 
-        //fect api
-        const response = await fetch('http://localhost:8080/user/login',
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    email: email,
-                    password: password
-                })
-            })
+    setCookie(null, "token", responseData?.data?.token ?? "", {
+      maxAge: 60 * 60 * 24 * 7,
+      path: "/",
+    });
 
-        if (response.status === 200) {
-            toast.success("Login feito com sucesso!");
+    setCookie(null, "user", JSON.stringify(responseData?.data?.user ?? {}), {
+      maxAge: 60 * 60 * 24 * 7,
+      path: "/",
+    });
 
-            const responsedata = await response.json();
-
-            console.log("data", responsedata)
-
-            //salvar cookie
-            setCookie(null, "token", responsedata.data.token, {
-                maxAge: 60 * 60 * 24 * 7,
-                path: "/",
-            })
-            setCookie(null, "user", JSON.stringify(responsedata.data), {
-                maxAge: 60 * 60 * 24 * 7,
-                path: "/",
-            })
-
-            if (typeof window !== "undefined") {
-                window.location.href = "/home"
-            }
-        } else {
-            toast.error("email ou senha incorretos")
-        }
-
+    toast.success("Login successful.");
+    if (typeof window !== "undefined") {
+      window.location.href = "/home";
     }
+  };
 
-    console.log("Email:", email, "Password:", password)
+  return (
+    <div className="w-1/2 flex flex-col justify-center">
+      <Card className="h-full flex flex-col justify-center px-14 gap-16">
+        <CardHeader className="text-5xl font-bold">
+          <span>Login</span>
+        </CardHeader>
 
-    return (
-        <div className="w-1/2">
+        <CardContent>
+          <div className="flex flex-col gap-5">
+            <div className="flex flex-col gap-2">
+              <Label>Email</Label>
+              <Input
+                type="email"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+                placeholder="example@example.com"
+                className="py-2 h-10 text-lg"
+              />
+            </div>
 
-            <Card className="h-full flex flex-col justify-center px-14">
-                <CardHeader >
-                    <span className="text-5xl font-bold">Login</span>
-                </CardHeader>
-                <CardContent>
-                    <div className="flex flex-col gap-5">
-                        <div className="flex flex-col gap-2">
-                            <Label>Email</Label>
-                            <Input
-                                type="text"
-                                placeholder="write your email"
-                                value={email}
-                                onChange={changeEmail}
-                            />
-                        </div>
+            <div className="flex flex-col gap-2">
+              <Label>Password</Label>
+              <Input
+                type="password"
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                placeholder="Your password"
+                className="py-2 h-10 text-lg"
+              />
+            </div>
 
-                        <div className="flex flex-col gap-2">
-                            <Label>password</Label>
-                            <Input
-                                type="password"
-                                placeholder="write your password"
-                                value={password}
-                                onChange={changePassword}
-                            />
-                        </div>
-                        <Button
-                            onClick={handleLogin}
-                            className="bg-[#13a4ec] w-full font-bold  py-3 drop-shadow-lg drop-shadow-gray-200">Login</Button>
+            <Button
+              onClick={handleLogin}
+              className="bg-[#13A4EC] rounded-md text-white font-bold py-3 drop-shadow-lg drop-shadow-gray-200"
+            >
+              Login
+            </Button>
+          </div>
 
-                    </div>
-                    <div className="text-center py-3">
-                        <span>Don't have an account? </span>
-                        <Link href="/registo" className="text-[#13a4ec]">Create an account</Link>
-                    </div>
-
-                </CardContent>
-
-            </Card>
-
-
-        </div>
-    )
-}
+          <div>
+            <span>Don&apos;t have an account yet? </span>
+            <Link href="/register" className="text-[#13A4EC] font-semibold">
+              Create Account
+            </Link>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
